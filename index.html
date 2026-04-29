@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FlixStream · Verificando</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* VARIABLES TEMA CLARO */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #000000;
+            --text-secondary: #4a4a4a;
+            --border-color: #eaeaea;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* TEMA OSCURO */
+        body.dark {
+            --bg-primary: #000000;
+            --bg-card: #0c0c0c;
+            --text-primary: #ffffff;
+            --text-secondary: #b5b5b5;
+            --border-color: #2a2a2a;
+            --success-color: #27ae60;
+            --warning-color: #e67e22;
+            --shadow-sm: 0 8px 24px rgba(255, 255, 255, 0.02), 0 1px 2px rgba(255, 255, 255, 0.03);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 460px;
+        }
+
+        .update-card {
+            background: var(--bg-card);
+            border-radius: 44px;
+            padding: 2rem 1.8rem 2.2rem 1.8rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        /* Animación de comprobación */
+        .checking-animation {
+            margin-bottom: 1.5rem;
+        }
+
+        .pulse-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        body.dark .pulse-icon {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .pulse-icon i {
+            font-size: 32px;
+            color: var(--text-primary);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.7; }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--text-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        h2 {
+            font-size: 1.7rem;
+            font-weight: 620;
+            letter-spacing: -0.3px;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sub {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: var(--border-color);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .status-message {
+            padding: 12px 16px;
+            border-radius: 24px;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .status-message.warning {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--warning-color);
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.9rem 1.2rem;
+            border-radius: 44px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+            width: 100%;
+            margin-top: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .features-list {
+            text-align: left;
+            margin: 1.5rem 0;
+            padding: 0 0.5rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-item i {
+            width: 24px;
+            font-size: 1rem;
+            color: var(--success-color);
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 1rem;
+        }
+
+        .content-block {
+            transition: opacity 0.3s ease;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .logo-card {
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: -0.3px;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Botón tema flotante */
+        .theme-float-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 60px;
+            padding: 10px 16px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: 0.2s;
+            z-index: 1100;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-float-btn:hover {
+            background: var(--border-color);
+        }
+
+        @media (max-width: 500px) {
+            .update-card {
+                padding: 1.6rem 1.4rem 1.8rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            .logo-card {
+                font-size: 1.5rem;
+            }
+            .theme-float-btn {
+                padding: 8px 12px;
+                font-size: 0.7rem;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón tema flotante -->
+    <div class="theme-float-btn" id="themeFloatBtn">
+        <i class="fas fa-moon" id="themeIcon"></i>
+        <span id="themeLabel">Modo oscuro</span>
+    </div>
+
+    <div class="container">
+        <div class="update-card">
+            <div class="logo-card">FLIXSTREAM</div>
+            
+            <!-- BLOQUE DE COMPROBACIÓN -->
+            <div id="checkingBlock" class="content-block">
+                <div class="checking-animation">
+                    <div class="pulse-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                </div>
+                <h2>Comprobando versión</h2>
+                <div class="sub">Verificando actualizaciones y conectividad...</div>
+                <div class="status-message">
+                    <div class="loading-spinner"></div>
+                    Conectando con servidores
+                </div>
+            </div>
+
+            <!-- BLOQUE ACTUALIZACIÓN DISPONIBLE -->
+            <div id="updateBlock" class="content-block hidden">
+                <div style="margin-bottom: 20px;">
+                    <i class="fas fa-download" style="font-size: 40px; color: var(--text-primary);"></i>
+                </div>
+                <h2>¡Nueva versión!</h2>
+                <div class="sub">Mejoras y correcciones disponibles</div>
+                
+                <div class="version-badge" id="updateBadge">
+                    <i class="fas fa-code-branch"></i> v2.5.0 disponible
+                </div>
+
+                <div class="features-list">
+                    <div class="feature-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Reproducción 2x más rápida</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-video"></i>
+                        <span>Buffer optimizado sin cortes</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fab fa-android"></i>
+                        <span>Soporte total Android 14/15</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-globe"></i>
+                        <span>Bug de conectividad reparado</span>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a href="#" class="btn btn-primary" id="downloadBtn">
+                        <i class="fas fa-download"></i> ACTUALIZAR AHORA
+                    </a>
+                    <a href="#" class="btn btn-secondary" id="telegramBtn" target="_blank">
+                        <i class="fab fa-telegram"></i> COMUNIDAD TELEGRAM
+                    </a>
+                </div>
+                
+                <div class="status-message" style="margin-top: 1rem; background: transparent; font-size: 0.75rem;" id="versionNote">
+                    <i class="fas fa-info-circle"></i> Versión actual: v2.4.0
+                </div>
+            </div>
+
+            <!-- BLOQUE DNS/ADBLOCK DETECTADO -->
+            <div id="blockedBlock" class="content-block hidden">
+                <div style="margin-bottom: 20px;">
+                    <i class="fas fa-shield-alt" style="font-size: 48px; color: var(--warning-color);"></i>
+                </div>
+                <h2>Acceso Restringido</h2>
+                <div class="sub">Detectamos un bloqueo de DNS o AdBlock</div>
+                
+                <div class="status-message warning">
+                    <i class="fas fa-exclamation-triangle"></i> Desactívalo para entrar a FlixStream
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" id="retryBtn">
+                        <i class="fas fa-sync-alt"></i> REINTENTAR
+                    </button>
+                    <a href="#" class="btn btn-secondary" id="telegramBtn2" target="_blank">
+                        <i class="fab fa-telegram"></i> COMUNIDAD TELEGRAM
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== CONFIGURACIÓN ==========
+        const VERSION_SERVIDOR = 100; // 2.5.0
+        const URL_APP_DESTINO = 'https://flixstream.xo.je';
+        const URL_DESCARGA = '#';
+        const URL_TELEGRAM = 'https://t.me/FlixStream_Oficial';
+        
+        // Obtener versión del usuario desde URL (?v=xxx)
+        const urlParams = new URLSearchParams(window.location.search);
+        let versionUsuario = parseInt(urlParams.get('v')) || 90;
+        
+        // Variables de estado
+        let verificado = false;
+        let bloqueado = false;
+        
+        // Elementos del DOM
+        const checkingBlock = document.getElementById('checkingBlock');
+        const updateBlock = document.getElementById('updateBlock');
+        const blockedBlock = document.getElementById('blockedBlock');
+        
+        const downloadBtn = document.getElementById('downloadBtn');
+        const retryBtn = document.getElementById('retryBtn');
+        
+        // Función para mostrar bloques
+        function showBlock(blockId) {
+            checkingBlock.classList.add('hidden');
+            updateBlock.classList.add('hidden');
+            blockedBlock.classList.add('hidden');
+            
+            if (blockId === 'update') {
+                updateBlock.classList.remove('hidden');
+                updateBlock.classList.add('fade-in');
+            } else if (blockId === 'blocked') {
+                blockedBlock.classList.remove('hidden');
+                blockedBlock.classList.add('fade-in');
+            } else {
+                checkingBlock.classList.remove('hidden');
+                checkingBlock.classList.add('fade-in');
+            }
+        }
+        
+        // Mostrar pantalla de actualización con las versiones correctas
+        function mostrarActualizacion() {
+            const versionActualNum = (versionUsuario / 100).toFixed(1);
+            const versionNuevaNum = (VERSION_SERVIDOR / 100).toFixed(1);
+            const versionNote = document.getElementById('versionNote');
+            const updateBadge = document.getElementById('updateBadge');
+            
+            if (versionNote) {
+                versionNote.innerHTML = `<i class="fas fa-info-circle"></i> Versión actual: v${versionActualNum} → Nueva: v${versionNuevaNum}`;
+            }
+            if (updateBadge) {
+                updateBadge.innerHTML = `<i class="fas fa-code-branch"></i> v${versionNuevaNum} disponible`;
+            }
+            showBlock('update');
+        }
+        
+        // Mostrar pantalla de bloqueo
+        function mostrarBloqueo() {
+            if (!bloqueado) {
+                bloqueado = true;
+                showBlock('blocked');
+            }
+        }
+        
+        // Redirigir a la app (solo si versión está actualizada)
+        function redirigirApp() {
+            if (!verificado) {
+                verificado = true;
+                // Verificar si la versión del usuario es correcta
+                if (versionUsuario >= VERSION_SERVIDOR) {
+                    // Versión correcta, redirigir
+                    window.location.href = URL_APP_DESTINO;
+                } else {
+                    // Versión antigua, mostrar actualización
+                    mostrarActualizacion();
+                }
+            }
+        }
+        
+        // VERIFICACIÓN REAL DE DNS/ADBLOCK
+        async function chequearConexion() {
+            try {
+                // Usamos un endpoint de Google que suele ser bloqueado por DNS privados/AdBlocks
+                await fetch('https://www.google-analytics.com/analytics.js', {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    cache: 'no-store'
+                });
+                redirigirApp();
+            } catch (error) {
+                mostrarBloqueo();
+            }
+        }
+        
+        // Asignar URLs a los botones
+        function assignUrls() {
+            if (downloadBtn) {
+                downloadBtn.href = URL_DESCARGA;
+                downloadBtn.setAttribute('target', '_blank');
+            }
+            document.querySelectorAll('[id^="telegramBtn"]').forEach(btn => {
+                btn.href = URL_TELEGRAM;
+                btn.setAttribute('target', '_blank');
+            });
+        }
+        
+        // Reintentar comprobación
+        function retryCheck() {
+            bloqueado = false;
+            verificado = false;
+            showBlock('checking');
+            chequearConexion();
+        }
+        
+        // ========== TEMA OSCURO/CLARO ==========
+        function initTheme() {
+            const savedTheme = localStorage.getItem('themePreference');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeLabel = document.getElementById('themeLabel');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                themeIcon.className = 'fas fa-sun';
+                themeLabel.innerText = 'Modo claro';
+            } else {
+                document.body.classList.remove('dark');
+                themeIcon.className = 'fas fa-moon';
+                themeLabel.innerText = 'Modo oscuro';
+            }
+        }
+        
+        function toggleTheme() {
+            const themeIcon = document.getElementById('themeIcon');
+            const themeLabel = document.getElementById('themeLabel');
+            if (document.body.classList.contains('dark')) {
+                document.body.classList.remove('dark');
+                localStorage.setItem('themePreference', 'light');
+                themeIcon.className = 'fas fa-moon';
+                themeLabel.innerText = 'Modo oscuro';
+            } else {
+                document.body.classList.add('dark');
+                localStorage.setItem('themePreference', 'dark');
+                themeIcon.className = 'fas fa-sun';
+                themeLabel.innerText = 'Modo claro';
+            }
+        }
+        
+        // Mostrar información de depuración (opcional, para pruebas)
+        function mostrarDebug() {
+            console.log('Versión usuario:', versionUsuario);
+            console.log('Versión servidor:', VERSION_SERVIDOR);
+            console.log('¿Necesita actualización?', versionUsuario < VERSION_SERVIDOR);
+        }
+        
+        // Inicialización
+        function init() {
+            mostrarDebug();
+            assignUrls();
+            initTheme();
+            const themeBtn = document.getElementById('themeFloatBtn');
+            if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+            if (retryBtn) retryBtn.addEventListener('click', retryCheck);
+            chequearConexion();
+            // Comprobación periódica cada 4 segundos
+            setInterval(chequearConexion, 4000);
+        }
+        
+        init();
+    </script>
+</body>
+</html>
